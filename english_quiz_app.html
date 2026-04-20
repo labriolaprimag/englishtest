@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 English Quiz Master 🇬🇧</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .level-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .level-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 30px 20px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .level-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .level-card.beginner {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        }
+
+        .level-card.intermediate {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+        }
+
+        .level-card.expert {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .level-card .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .level-card .description {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: normal;
+            margin-top: 10px;
+        }
+
+        .quiz-screen {
+            display: none;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .progress {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .score {
+            font-size: 18px;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .answers {
+            display: grid;
+            gap: 15px;
+        }
+
+        .answer-btn {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            font-size: 18px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #333;
+        }
+
+        .answer-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .answer-btn.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .answer-btn.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .answer-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: none;
+            margin: 20px auto;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .result-screen h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .result-stats {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .stat {
+            font-size: 24px;
+            margin: 15px 0;
+            color: #333;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .result-message {
+            font-size: 20px;
+            color: #666;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-card {
+            animation: slideIn 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 English Quiz Master 🇬🇧</h1>
+            <p>Test your English knowledge!</p>
+        </div>
+
+        <div class="content">
+            <!-- Level Selection -->
+            <div class="level-selection" id="levelSelection">
+                <button class="level-card beginner" onclick="startQuiz('beginner')">
+                    <div class="icon">🌱</div>
+                    <div>BEGINNER</div>
+                    <div class="description">Basic vocabulary & simple grammar</div>
+                </button>
+                <button class="level-card intermediate" onclick="startQuiz('intermediate')">
+                    <div class="icon">📖</div>
+                    <div>INTERMEDIATE</div>
+                    <div class="description">Complex sentences & phrasal verbs</div>
+                </button>
+                <button class="level-card expert" onclick="startQuiz('expert')">
+                    <div class="icon">🎓</div>
+                    <div>EXPERT</div>
+                    <div class="description">Advanced grammar & idioms</div>
+                </button>
+            </div>
+
+            <!-- Quiz Screen -->
+            <div class="quiz-screen" id="quizScreen">
+                <div class="quiz-header">
+                    <div class="progress">
+                        Question <span id="currentQuestion">1</span> / <span id="totalQuestions">10</span>
+                    </div>
+                    <div class="score">
+                        Score: <span id="score">0</span>
+                    </div>
+                </div>
+
+                <div class="question-card" id="questionCard">
+                    <div class="question-text" id="questionText"></div>
+                    <div class="answers" id="answersContainer"></div>
+                    <div class="feedback" id="feedback"></div>
+                </div>
+
+                <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+            </div>
+
+            <!-- Result Screen -->
+            <div class="result-screen" id="resultScreen">
+                <h2 id="resultTitle">🎉 Quiz Completed! 🎉</h2>
+                <div class="result-stats">
+                    <div class="stat">
+                        Correct Answers: <span class="stat-value" id="correctAnswers">0</span> / <span id="totalQuestionsResult">10</span>
+                    </div>
+                    <div class="stat">
+                        Score: <span class="stat-value" id="finalScore">0</span>%
+                    </div>
+                    <div class="stat">
+                        Level: <span class="stat-value" id="levelCompleted">Beginner</span>
+                    </div>
+                </div>
+                <div class="result-message" id="resultMessage"></div>
+                <div class="action-buttons">
+                    <button class="btn" onclick="retryLevel()">🔄 Retry Same Level</button>
+                    <button class="btn secondary" onclick="backToMenu()">🏠 Main Menu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = {
+            beginner: [
+                {
+                    question: "What is the plural of 'child'?",
+                    answers: ["childs", "children", "childes", "child"],
+                    correct: 1
+                },
+                {
+                    question: "I ___ to school every day.",
+                    answers: ["go", "goes", "going", "went"],
+                    correct: 0
+                },
+                {
+                    question: "She ___ a doctor.",
+                    answers: ["am", "is", "are", "be"],
+                    correct: 1
+                },
+                {
+                    question: "What color is the sky?",
+                    answers: ["red", "green", "blue", "yellow"],
+                    correct: 2
+                },
+                {
+                    question: "___ you like pizza?",
+                    answers: ["Do", "Does", "Is", "Are"],
+                    correct: 0
+                },
+                {
+                    question: "The cat is ___ the table.",
+                    answers: ["in", "on", "at", "of"],
+                    correct: 1
+                },
+                {
+                    question: "I have two ___.",
+                    answers: ["apple", "apples", "appls", "aples"],
+                    correct: 1
+                },
+                {
+                    question: "What time ___ it?",
+                    answers: ["am", "is", "are", "be"],
+                    correct: 1
+                },
+                {
+                    question: "They ___ playing football.",
+                    answers: ["is", "am", "are", "be"],
+                    correct: 2
+                },
+                {
+                    question: "My name ___ John.",
+                    answers: ["am", "is", "are", "be"],
+                    correct: 1
+                }
+            ],
+            intermediate: [
+                {
+                    question: "I wish I ___ speak French fluently.",
+                    answers: ["can", "could", "will", "would"],
+                    correct: 1
+                },
+                {
+                    question: "She has been studying English ___ three years.",
+                    answers: ["since", "for", "during", "from"],
+                    correct: 1
+                },
+                {
+                    question: "If I ___ you, I would accept the job offer.",
+                    answers: ["am", "was", "were", "be"],
+                    correct: 2
+                },
+                {
+                    question: "The book ___ by millions of people.",
+                    answers: ["reads", "is read", "was reading", "has read"],
+                    correct: 1
+                },
+                {
+                    question: "What does 'give up' mean?",
+                    answers: ["to start", "to quit", "to continue", "to improve"],
+                    correct: 1
+                },
+                {
+                    question: "I'm looking forward ___ you again.",
+                    answers: ["see", "to see", "to seeing", "seeing"],
+                    correct: 2
+                },
+                {
+                    question: "Neither my brother ___ my sister likes coffee.",
+                    answers: ["or", "and", "nor", "but"],
+                    correct: 2
+                },
+                {
+                    question: "She suggested ___ to the cinema.",
+                    answers: ["go", "to go", "going", "goes"],
+                    correct: 2
+                },
+                {
+                    question: "The meeting has been ___ until next week.",
+                    answers: ["put off", "put on", "put up", "put away"],
+                    correct: 0
+                },
+                {
+                    question: "By the time you arrive, I ___ dinner.",
+                    answers: ["will finish", "finish", "will have finished", "finished"],
+                    correct: 2
+                }
+            ],
+            expert: [
+                {
+                    question: "Had I known about the traffic, I ___ earlier.",
+                    answers: ["would leave", "would have left", "will leave", "left"],
+                    correct: 1
+                },
+                {
+                    question: "What does the idiom 'break the ice' mean?",
+                    answers: ["to destroy something", "to make people feel more comfortable", "to be very cold", "to interrupt"],
+                    correct: 1
+                },
+                {
+                    question: "Scarcely ___ the door when the phone rang.",
+                    answers: ["I opened", "had I opened", "I had opened", "did I open"],
+                    correct: 1
+                },
+                {
+                    question: "The problem is ___ difficult to solve.",
+                    answers: ["too much", "very much", "far too", "so much"],
+                    correct: 2
+                },
+                {
+                    question: "She would rather you ___ about it.",
+                    answers: ["don't tell", "didn't tell", "not tell", "not to tell"],
+                    correct: 1
+                },
+                {
+                    question: "What does 'be at loggerheads' mean?",
+                    answers: ["to be confused", "to be in strong disagreement", "to be very intelligent", "to be cooperative"],
+                    correct: 1
+                },
+                {
+                    question: "___ the weather, we'll go hiking.",
+                    answers: ["Despite", "Although", "Regardless of", "Even"],
+                    correct: 2
+                },
+                {
+                    question: "It's high time we ___ more attention to the environment.",
+                    answers: ["pay", "paid", "should pay", "paying"],
+                    correct: 1
+                },
+                {
+                    question: "The proposal ___ at the meeting yesterday.",
+                    answers: ["was objected to", "objected to", "was objected", "objected"],
+                    correct: 0
+                },
+                {
+                    question: "I'd sooner you ___ me the truth from the beginning.",
+                    answers: ["tell", "told", "had told", "have told"],
+                    correct: 2
+                }
+            ]
+        };
+
+        let currentLevel = '';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedAnswer = null;
+
+        function startQuiz(level) {
+            currentLevel = level;
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            document.getElementById('levelSelection').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+            document.getElementById('resultScreen').style.display = 'none';
+            
+            document.getElementById('totalQuestions').textContent = questions[level].length;
+            document.getElementById('score').textContent = score;
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const question = questions[currentLevel][currentQuestionIndex];
+            selectedAnswer = null;
+            
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'none';
+            
+            const answersContainer = document.getElementById('answersContainer');
+            answersContainer.innerHTML = '';
+            
+            question.answers.forEach((answer, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = answer;
+                btn.onclick = () => selectAnswer(index);
+                answersContainer.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(answerIndex) {
+            if (selectedAnswer !== null) return;
+            
+            selectedAnswer = answerIndex;
+            const question = questions[currentLevel][currentQuestionIndex];
+            const answerButtons = document.querySelectorAll('.answer-btn');
+            
+            answerButtons.forEach(btn => btn.classList.add('disabled'));
+            
+            const feedback = document.getElementById('feedback');
+            
+            if (answerIndex === question.correct) {
+                answerButtons[answerIndex].classList.add('correct');
+                score += 10;
+                document.getElementById('score').textContent = score;
+                
+                feedback.className = 'feedback correct';
+                feedback.textContent = '✓ Correct! Well done!';
+                feedback.style.display = 'block';
+            } else {
+                answerButtons[answerIndex].classList.add('incorrect');
+                answerButtons[question.correct].classList.add('correct');
+                
+                feedback.className = 'feedback incorrect';
+                feedback.textContent = `✗ Wrong! The correct answer is: ${question.answers[question.correct]}`;
+                feedback.style.display = 'block';
+            }
+            
+            document.getElementById('nextBtn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < questions[currentLevel].length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'block';
+            
+            const totalQuestions = questions[currentLevel].length;
+            const correctAnswers = score / 10;
+            const percentage = (score / (totalQuestions * 10)) * 100;
+            
+            document.getElementById('correctAnswers').textContent = correctAnswers;
+            document.getElementById('totalQuestionsResult').textContent = totalQuestions;
+            document.getElementById('finalScore').textContent = Math.round(percentage);
+            document.getElementById('levelCompleted').textContent = currentLevel.charAt(0).toUpperCase() + currentLevel.slice(1);
+            
+            let message = '';
+            let title = '';
+            
+            if (percentage === 100) {
+                title = '🏆 PERFECT SCORE! 🏆';
+                message = "Outstanding! You're an English master! 🌟";
+            } else if (percentage >= 80) {
+                title = '🎉 EXCELLENT! 🎉';
+                message = "Great job! You have a strong command of English! 👏";
+            } else if (percentage >= 60) {
+                title = '👍 GOOD JOB! 👍';
+                message = "Well done! Keep practicing to improve even more! 📚";
+            } else if (percentage >= 40) {
+                title = '📖 KEEP LEARNING! 📖';
+                message = "Not bad! Study more and you'll do better next time! 💪";
+            } else {
+                title = '🌱 KEEP TRYING! 🌱';
+                message = "Don't give up! Practice makes perfect! 🎯";
+            }
+            
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultMessage').textContent = message;
+        }
+
+        function retryLevel() {
+            startQuiz(currentLevel);
+        }
+
+        function backToMenu() {
+            document.getElementById('levelSelection').style.display = 'grid';
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
